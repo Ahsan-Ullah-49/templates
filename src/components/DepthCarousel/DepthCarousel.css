@@ -1,0 +1,392 @@
+/* ============================================================
+   DEPTH CAROUSEL — Premium Redesign
+   ============================================================ */
+
+.depth-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: var(--dc-perspective, 1400px);
+  perspective-origin: 50% 50%;
+  touch-action: pan-y;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+
+.depth-carousel:active {
+  cursor: grabbing;
+}
+
+.depth-carousel:focus-visible {
+  outline: 2px solid rgba(124, 92, 252, 0.6);
+  outline-offset: 6px;
+  border-radius: 16px;
+}
+
+/* ─── Stage ──────────────────────────────────────────────── */
+.depth-carousel__stage {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+/* ─── Card ───────────────────────────────────────────────── */
+.depth-carousel__card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center center;
+  overflow: hidden;
+  border-radius: var(--dc-radius, 20px);
+  background: linear-gradient(
+    160deg,
+    rgba(30, 24, 60, 0.92) 0%,
+    rgba(12, 10, 28, 0.98) 60%,
+    rgba(18, 14, 40, 0.95) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 0 1px rgba(124, 92, 252, 0.08),
+    0 40px 80px -24px rgba(0, 0, 0, 0.85),
+    0 12px 32px -10px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  will-change: transform, opacity, filter;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition:
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.depth-carousel__card:hover {
+  border-color: rgba(124, 92, 252, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(124, 92, 252, 0.4),
+    0 0 48px -8px rgba(124, 92, 252, 0.35),
+    0 52px 100px -32px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+/* Active / focused card gets a stronger glow */
+.depth-carousel__card[data-active='true'] {
+  border-color: rgba(124, 92, 252, 0.6);
+  box-shadow:
+    0 0 0 1px rgba(124, 92, 252, 0.5),
+    0 0 72px -12px rgba(124, 92, 252, 0.45),
+    0 52px 120px -32px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+
+/* ─── Glare wrapper ──────────────────────────────────────── */
+.depth-carousel__glare {
+  border-radius: calc(var(--dc-radius, 20px) - 2px);
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+}
+
+/* ─── Image ──────────────────────────────────────────────── */
+.depth-carousel__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: calc(var(--dc-radius, 20px) - 2px);
+  pointer-events: none;
+  -webkit-user-drag: none;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.depth-carousel__card:hover .depth-carousel__img {
+  transform: scale(1.04);
+}
+
+/* ─── Gradient caption overlay ───────────────────────────── */
+.depth-carousel__caption-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: calc(var(--dc-radius, 20px) - 2px);
+  background: linear-gradient(
+    to top,
+    rgba(4, 3, 14, 0.94) 0%,
+    rgba(4, 3, 14, 0.7) 20%,
+    rgba(4, 3, 14, 0.2) 48%,
+    transparent 68%
+  );
+  z-index: 2;
+}
+
+/* ─── Caption text ───────────────────────────────────────── */
+.depth-carousel__caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 20px 18px;
+  z-index: 3;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.depth-carousel__label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(124, 92, 252, 0.9);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.depth-carousel__title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  line-height: 1.3;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease 0.04s, transform 0.3s ease 0.04s;
+}
+
+.depth-carousel__card[data-active='true'] .depth-carousel__label,
+.depth-carousel__card[data-active='true'] .depth-carousel__title {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Top badge (index) ──────────────────────────────────── */
+.depth-carousel__badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(124, 92, 252, 0.2);
+  border: 1px solid rgba(124, 92, 252, 0.4);
+  backdrop-filter: blur(8px);
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.depth-carousel__card[data-active='true'] .depth-carousel__badge {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ─── Glass sheen ────────────────────────────────────────── */
+.depth-carousel__glass {
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--dc-radius, 20px) - 2px);
+  pointer-events: none;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 38%);
+  mix-blend-mode: overlay;
+  z-index: 4;
+}
+
+/* ─── Depth tint ─────────────────────────────────────────── */
+.depth-carousel__tint {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  z-index: 5;
+}
+
+/* ─── Navigation arrows ──────────────────────────────────── */
+.depth-carousel__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3000;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(10, 8, 22, 0.65);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    transform 0.22s ease,
+    color 0.22s ease;
+}
+
+.depth-carousel__arrow:hover {
+  background: rgba(124, 92, 252, 0.22);
+  border-color: rgba(124, 92, 252, 0.6);
+  color: #fff;
+}
+
+.depth-carousel__arrow:active {
+  transform: translateY(-50%) scale(0.93);
+}
+
+.depth-carousel__arrow--prev {
+  left: 20px;
+}
+
+.depth-carousel__arrow--next {
+  right: 20px;
+}
+
+/* ─── Dot indicators ─────────────────────────────────────── */
+.depth-carousel__dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3000;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(6, 5, 18, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.depth-carousel__dot {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+  cursor: pointer;
+  transition:
+    width 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.28s ease;
+}
+
+.depth-carousel__dot.is-active {
+  width: 22px;
+  background: #7c5cfc;
+}
+
+/* ─── Lightbox ───────────────────────────────────────────── */
+.depth-carousel__lightbox {
+  position: absolute;
+  inset: 0;
+  z-index: 5000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(4, 3, 14, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: depth-carousel-lightbox-in 0.28s ease;
+  cursor: zoom-out;
+}
+
+.depth-carousel__lightbox-inner {
+  position: relative;
+  margin: 0;
+  max-width: min(92vw, 1100px);
+  max-height: 88vh;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.01));
+  box-shadow:
+    0 0 0 1px rgba(124, 92, 252, 0.2),
+    0 60px 140px -40px rgba(0, 0, 0, 0.92);
+  animation: depth-carousel-lightbox-zoom 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: auto;
+}
+
+.depth-carousel__lightbox-inner img {
+  display: block;
+  max-width: min(92vw, 1100px);
+  max-height: 88vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.depth-carousel__lightbox-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(10, 8, 22, 0.7);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.depth-carousel__lightbox-close:hover {
+  background: rgba(124, 92, 252, 0.3);
+  border-color: rgba(124, 92, 252, 0.7);
+}
+
+/* ─── Keyframes ──────────────────────────────────────────── */
+@keyframes depth-carousel-lightbox-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes depth-carousel-lightbox-zoom {
+  from { opacity: 0; transform: scale(0.91); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ─── Reduced motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .depth-carousel__card,
+  .depth-carousel__img {
+    will-change: auto;
+    transition: none;
+  }
+  .depth-carousel__arrow,
+  .depth-carousel__dot {
+    transition: none;
+  }
+  .depth-carousel__lightbox,
+  .depth-carousel__lightbox-inner {
+    animation: none;
+  }
+  .depth-carousel__label,
+  .depth-carousel__title,
+  .depth-carousel__badge {
+    transition: none;
+  }
+}
